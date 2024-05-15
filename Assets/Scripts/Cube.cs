@@ -19,6 +19,17 @@ public class Cube : MonoBehaviour
         _remover = GetComponent<Remover>();
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.TryGetComponent<Ground>(out _) && _isFell == false)
+        {
+            _isFell = true;
+            Colorize(UserUtils.GetRandomColor());
+
+            _remover.RemoveAfter(Random.Range(_minLandingTime, _maxLandingTime), Remove);
+        }
+    }
+
     public void Init(Vector3 spawnPoint, Color32 color)
     {
         _defaultColor = color;
@@ -33,17 +44,6 @@ public class Cube : MonoBehaviour
     public void SetSpawnPosition(Vector3 spawnPoint) => transform.position = spawnPoint;
 
     private void Colorize(Color32 color) => _renderer.material.color = color;
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.TryGetComponent<Ground>(out _) && _isFell == false)
-        {
-            _isFell = true;
-            Colorize(UserUtils.GetRandomColor());
-
-            _remover.RemoveAfter(Random.Range(_minLandingTime, _maxLandingTime), Remove);
-        }
-    }
 
     private void Remove()
     {
