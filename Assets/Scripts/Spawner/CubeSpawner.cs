@@ -11,7 +11,7 @@ public class CubeSpawner : MonoBehaviour
     private List<Cube> _pool = new();
 
     private readonly bool _isSpawning = true;
-    private readonly float _poolSize = 50f;
+    private readonly float _poolSize = 80f;
     private readonly float _spawnDuration = 0.1f;
     private readonly Color _defaultColor = Color.blue;
 

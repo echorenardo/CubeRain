@@ -21,8 +21,8 @@ public class SpawnArea : MonoBehaviour
 
     public Vector3 GetRandomPoint()
     {
-        float pointX = UserUtils.GetRandomNumber((int)(_skyPositionX - _skySizeX), (int)(_skyPositionX + _skySizeX));
-        float pointZ = UserUtils.GetRandomNumber((int)(_skyPositionZ - _skySizeZ), (int)(_skyPositionZ + _skySizeZ));
+        float pointX = Random.Range((_skyPositionX - _skySizeX), (_skyPositionX + _skySizeX));
+        float pointZ = Random.Range((_skyPositionZ - _skySizeZ), (_skyPositionZ + _skySizeZ));
 
         return new Vector3(pointX, _skyPositionY, pointZ);
     }

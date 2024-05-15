@@ -1,31 +1,22 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Renderer))]
+[RequireComponent(typeof(Remover))]
 public class Cube : MonoBehaviour
 {
+    private Remover _remover;
     private Renderer _renderer;
-    private Ground _ground;
     private Color32 _defaultColor;
-    private Timer _landTimer;
 
     private bool _isFell;
 
-    private readonly int _minLandTime = 2;
-    private readonly int _maxLandTime = 5;
+    private readonly int _minLandingTime = 2;
+    private readonly int _maxLandingTime = 6;
 
     private void Awake()
     {
         _renderer = GetComponent<Renderer>();
-        _landTimer = new Timer(UserUtils.GetRandomNumber(_minLandTime, _maxLandTime), Remove);
-    }
-
-    private void Update()
-    {
-        if (_isFell)
-            _landTimer.Countdown(Time.deltaTime);
+        _remover = GetComponent<Remover>();
     }
 
     public void Init(Vector3 spawnPoint, Color32 color)
@@ -45,10 +36,12 @@ public class Cube : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.TryGetComponent<Ground>(out _ground) && _isFell == false)
+        if (collision.gameObject.TryGetComponent<Ground>(out _) && _isFell == false)
         {
             _isFell = true;
             Colorize(UserUtils.GetRandomColor());
+
+            _remover.RemoveAfter(Random.Range(_minLandingTime, _maxLandingTime), Remove);
         }
     }
 
@@ -57,6 +50,5 @@ public class Cube : MonoBehaviour
         Disable();
         Colorize(_defaultColor);
         _isFell = false;
-        _ground = null;
     }
 }
