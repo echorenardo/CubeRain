@@ -1,22 +1,42 @@
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
+[RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Renderer))]
 [RequireComponent(typeof(Remover))]
-public class Cube : MonoBehaviour
+public class Cube : SpawnObject, IExplodable
 {
     private Remover _remover;
     private Renderer _renderer;
-    private Color32 _defaultColor;
+    private Rigidbody _rigidbody;
 
     private bool _isFell;
 
+    private readonly Color32 _defaultColor = Color.blue;
     private readonly int _minLandingTime = 2;
     private readonly int _maxLandingTime = 6;
+
+    public event Action<Cube> Dead;
 
     private void Awake()
     {
         _renderer = GetComponent<Renderer>();
         _remover = GetComponent<Remover>();
+        _rigidbody = GetComponent<Rigidbody>();
+    }
+
+    private void Start() => Colorize(_defaultColor);
+
+    public void TakeExplosion(float force, Vector3 position, float radius) => _rigidbody.AddExplosionForce(force, position, radius);
+
+    public override void Remove()
+    {
+        Dead?.Invoke(this);
+        base.Remove();
+
+        Colorize(_defaultColor);
+        _isFell = false;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -30,25 +50,5 @@ public class Cube : MonoBehaviour
         }
     }
 
-    public void Init(Vector3 spawnPoint, Color32 color)
-    {
-        _defaultColor = color;
-        Colorize(_defaultColor);
-        SetSpawnPosition(spawnPoint);
-    }
-
-    public void Enable() => gameObject.SetActive(true);
-
-    public void Disable() => gameObject.SetActive(false);
-
-    public void SetSpawnPosition(Vector3 spawnPoint) => transform.position = spawnPoint;
-
     private void Colorize(Color32 color) => _renderer.material.color = color;
-
-    private void Remove()
-    {
-        Disable();
-        Colorize(_defaultColor);
-        _isFell = false;
-    }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Remover : MonoBehaviour
@@ -9,16 +8,18 @@ public class Remover : MonoBehaviour
 
     public event Action Removed;
 
-    public void RemoveAfter(int time, Action action) => _coroutine ??= StartCoroutine(RemoveCoroutine(time, action));
+    public void RemoveAfter(int time, Action actionAfter) => _coroutine ??= StartCoroutine(RemoveCoroutine(time, actionAfter));
 
-    private IEnumerator RemoveCoroutine(int time, Action action)
+    private IEnumerator RemoveCoroutine(int time, Action actionAfter)
     {
         WaitForSeconds wait = new(time);
 
         yield return wait;
 
         Removed?.Invoke();
-        action?.Invoke();
+
+        actionAfter?.Invoke();
+
         _coroutine = null;
     }
 }
