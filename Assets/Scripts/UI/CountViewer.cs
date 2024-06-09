@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -15,7 +16,12 @@ public class CountViewer : MonoBehaviour
     private int _totalNumber = 0;
     private int _activeNumber;
 
+    private readonly float _checkActiveInterval = 0.2f;
+    private readonly bool _isChecking = true;
+
     private event Action Changed;
+
+    private void Start() => StartCoroutine(SetActiveNumberCoroutine());
 
     private void OnEnable()
     {
@@ -28,8 +34,6 @@ public class CountViewer : MonoBehaviour
         _spawner.Spawned -= SetTotalNumber;
         Changed -= SetText;
     }
-
-    private void Update() => SetActiveNumber(_spawner.GetTotalActive());
 
     protected void SetTitle(string name)
     {
@@ -50,4 +54,16 @@ public class CountViewer : MonoBehaviour
     }
 
     private void SetText() => _text.text = _title + "\n" + TotalNumberText + Separator + _totalNumber + "\n" + ActiveNumberText + Separator + _activeNumber;
+
+    private IEnumerator SetActiveNumberCoroutine()
+    {
+        WaitForSeconds wait = new(_checkActiveInterval);
+
+        while (_isChecking)
+        {
+            SetActiveNumber(_spawner.GetTotalActive());
+
+            yield return wait;
+        }
+    }
 }
